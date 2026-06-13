@@ -29,6 +29,8 @@
       <li><a href="#budaya" class="nav-link">Budaya</a></li>
       <li><a href="#alam" class="nav-link">Alam</a></li>
       <li><a href="#gamelan" class="nav-link">Gamelan</a></li>
+      <li><a href="#peta" class="nav-link">Peta</a></li>
+      <li><a href="#edukasi" class="nav-link">Edukasi</a></li>
     </ul>
   </nav>
 
@@ -314,6 +316,122 @@
     </div>
   </section>
 
+  <!-- ===== PETA ===== -->
+  <section class="peta-section" id="peta">
+    <div class="container">
+      <div class="section-header" data-reveal>
+        <span class="section-eyebrow">Lokasi</span>
+        <h2 class="section-title">Peta Pulau Bali</h2>
+        <p class="section-sub">Jelajahi lokasi kabupaten, tempat wisata, dan landmark penting di Bali secara interaktif.</p>
+      </div>
+
+      <!-- Marker Buttons -->
+      <div class="peta-markers" data-reveal>
+        <button class="marker-btn active" data-lat="-8.6705" data-lng="115.2126" data-zoom="13" data-label="Denpasar">🏙️ Denpasar</button>
+        <button class="marker-btn" data-lat="-8.7832" data-lng="115.1686" data-zoom="13" data-label="Kuta - Badung">🏖️ Kuta</button>
+        <button class="marker-btn" data-lat="-8.5069" data-lng="115.2625" data-zoom="13" data-label="Ubud - Gianyar">🎨 Ubud</button>
+        <button class="marker-btn" data-lat="-8.2748" data-lng="115.0328" data-zoom="13" data-label="Singaraja - Buleleng">⚓ Singaraja</button>
+        <button class="marker-btn" data-lat="-8.4539" data-lng="115.6119" data-zoom="13" data-label="Karangasem">🌋 Karangasem</button>
+        <button class="marker-btn" data-lat="-8.5445" data-lng="115.1050" data-zoom="13" data-label="Tabanan">🌾 Tabanan</button>
+        <button class="marker-btn" data-lat="-8.1721" data-lng="114.6228" data-zoom="13" data-label="Jembrana">🌊 Jembrana</button>
+        <button class="marker-btn" data-lat="-8.4588" data-lng="115.3614" data-zoom="13" data-label="Bangli">🌿 Bangli</button>
+        <button class="marker-btn" data-lat="-8.5398" data-lng="115.4057" data-zoom="13" data-label="Klungkung">👑 Klungkung</button>
+      </div>
+
+      <!-- Map Embed -->
+      <div class="peta-wrap" data-reveal>
+        <iframe
+          id="petaFrame"
+          class="peta-iframe"
+          src="https://maps.google.com/maps?q=-8.6705,115.2126&z=10&output=embed&hl=id"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Peta Bali">
+        </iframe>
+        <div class="peta-label" id="petaLabel">📍 Denpasar — Ibu Kota Provinsi Bali</div>
+      </div>
+
+      <!-- Info singkat -->
+      <div class="peta-info-grid" data-reveal>
+        <div class="peta-info-card">
+          <span class="peta-info-icon">🌐</span>
+          <strong>Koordinat Bali</strong>
+          <p>8°3′40″LS — 114°25′53″ – 115°42′40″BT</p>
+        </div>
+        <div class="peta-info-card">
+          <span class="peta-info-icon">📐</span>
+          <strong>Luas Wilayah</strong>
+          <p>5.780 km² — terluas ke-20 di Indonesia</p>
+        </div>
+        <div class="peta-info-card">
+          <span class="peta-info-icon">🏔️</span>
+          <strong>Titik Tertinggi</strong>
+          <p>Gunung Agung — 3.142 mdpl</p>
+        </div>
+        <div class="peta-info-card">
+          <span class="peta-info-icon">🌊</span>
+          <strong>Garis Pantai</strong>
+          <p>±633 km mengelilingi Pulau Bali</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EDUKASI ===== -->
+  <section class="edukasi-section" id="edukasi">
+    <div class="container">
+      <div class="section-header" data-reveal>
+        <span class="section-eyebrow light">Edukasi Interaktif</span>
+        <h2 class="section-title light">Belajar tentang Bali</h2>
+        <p class="section-sub light">Quiz pengetahuan, kamus Bahasa Bali, dan kalender upacara adat.</p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="edu-tabs" data-reveal>
+        <button class="edu-tab active" data-tab="quiz">🧠 Quiz Bali</button>
+        <button class="edu-tab" data-tab="kamus">📖 Kamus Bahasa Bali</button>
+        <button class="edu-tab" data-tab="kalender">🗓️ Kalender Upacara</button>
+      </div>
+
+      <!-- Tab: Quiz -->
+      <div class="edu-panel active" id="tab-quiz" data-reveal>
+        <div class="quiz-container">
+          <div class="quiz-header">
+            <span class="quiz-progress-label">Pertanyaan <span id="qNum">1</span> dari <span id="qTotal">10</span></span>
+            <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qProgress"></div></div>
+            <span class="quiz-score-label">Skor: <span id="qScore">0</span></span>
+          </div>
+          <div class="quiz-card" id="quizCard">
+            <p class="quiz-question" id="quizQuestion">Memuat soal...</p>
+            <div class="quiz-options" id="quizOptions"></div>
+          </div>
+          <div class="quiz-result hidden" id="quizResult">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <h3 id="resultTitle"></h3>
+            <p id="resultDesc"></p>
+            <div class="result-score" id="resultScore"></div>
+            <button class="btn-primary" id="quizRetry" onclick="restartQuiz()">🔄 Ulangi Quiz</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Kamus -->
+      <div class="edu-panel" id="tab-kamus">
+        <div class="kamus-search">
+          <input type="text" id="kamusSearch" placeholder="Cari kata dalam Bahasa Bali..." class="kamus-input" />
+        </div>
+        <div class="kamus-grid" id="kamusGrid"></div>
+      </div>
+
+      <!-- Tab: Kalender -->
+      <div class="edu-panel" id="tab-kalender">
+        <div class="kalender-grid" id="kalenderGrid"></div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="container">
@@ -331,6 +449,8 @@
             <li><a href="#budaya">Budaya</a></li>
             <li><a href="#alam">Alam</a></li>
             <li><a href="#gamelan">Gamelan</a></li>
+            <li><a href="#peta">Peta</a></li>
+            <li><a href="#edukasi">Edukasi</a></li>
           </ul>
         </div>
         <div class="footer-nav">

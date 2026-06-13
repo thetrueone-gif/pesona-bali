@@ -602,3 +602,321 @@ function triggerKey(index, freq) {
   keyEl.classList.add('active');
   setTimeout(() => keyEl.classList.remove('active'), 180);
 }
+
+/* =========================================
+   PETA INTERAKTIF
+   ========================================= */
+function initPeta() {
+  const buttons = document.querySelectorAll('.marker-btn');
+  const frame   = document.getElementById('petaFrame');
+  const label   = document.getElementById('petaLabel');
+
+  const labelMap = {
+    'Denpasar'       : '📍 Denpasar — Ibu Kota Provinsi Bali',
+    'Kuta - Badung'  : '🏖️ Kuta, Badung — Pusat Pariwisata Internasional',
+    'Ubud - Gianyar' : '🎨 Ubud, Gianyar — Pusat Seni & Budaya Bali',
+    'Singaraja - Buleleng': '⚓ Singaraja, Buleleng — Gerbang Bali Utara',
+    'Karangasem'     : '🌋 Karangasem — Negeri di Kaki Gunung Agung',
+    'Tabanan'        : '🌾 Tabanan — Lumbung Padi & Warisan UNESCO',
+    'Jembrana'       : '🌊 Jembrana — Gerbang Bali Barat',
+    'Bangli'         : '🌿 Bangli — Paru-Paru Bali & Kaldera Batur',
+    'Klungkung'      : '👑 Klungkung — Pusat Kerajaan Bali Kuno',
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const lat   = btn.dataset.lat;
+      const lng   = btn.dataset.lng;
+      const zoom  = btn.dataset.zoom || 13;
+      const lbl   = btn.dataset.label;
+
+      // Update iframe src
+      frame.src = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed&hl=id`;
+
+      // Update label with fade
+      label.style.opacity = '0';
+      setTimeout(() => {
+        label.textContent = labelMap[lbl] || `📍 ${lbl}`;
+        label.style.opacity = '1';
+      }, 300);
+    });
+  });
+
+  // Smooth label transition
+  if (label) {
+    label.style.transition = 'opacity 0.3s ease';
+  }
+}
+
+/* =========================================
+   EDUKASI TABS
+   ========================================= */
+function initEduTabs() {
+  const tabs   = document.querySelectorAll('.edu-tab');
+  const panels = document.querySelectorAll('.edu-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t   => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const panel = document.getElementById(`tab-${tab.dataset.tab}`);
+      if (panel) panel.classList.add('active');
+    });
+  });
+}
+
+/* =========================================
+   QUIZ
+   ========================================= */
+const quizData = [
+  {
+    q: 'Apa julukan resmi Pulau Bali yang dikenal di seluruh dunia?',
+    opts: ['Pulau Seribu Pura', 'Pulau Dewata', 'Pulau Naga', 'Pulau Surga'],
+    ans: 1,
+  },
+  {
+    q: 'Sistem irigasi tradisional Bali yang diakui UNESCO sebagai Warisan Budaya Dunia adalah?',
+    opts: ['Sistem Gotong Royong', 'Sistem Subak', 'Sistem Banjar', 'Sistem Tri Hita Karana'],
+    ans: 1,
+  },
+  {
+    q: 'Pura terbesar dan paling suci di Bali yang disebut "Ibu dari Segala Pura" adalah?',
+    opts: ['Pura Tanah Lot', 'Pura Uluwatu', 'Pura Besakih', 'Pura Tirta Empul'],
+    ans: 2,
+  },
+  {
+    q: 'Gunung tertinggi di Bali sekaligus gunung suci yang dihormati masyarakat Hindu Bali adalah?',
+    opts: ['Gunung Batur', 'Gunung Agung', 'Gunung Batukaru', 'Gunung Merbuk'],
+    ans: 1,
+  },
+  {
+    q: 'Tarian Bali yang dibawakan puluhan penari dengan suara "cak" ritmis menggambarkan kisah Ramayana adalah?',
+    opts: ['Tari Barong', 'Tari Pendet', 'Tari Legong', 'Tari Kecak'],
+    ans: 3,
+  },
+  {
+    q: 'Upacara kremasi dalam tradisi Hindu Bali yang dirayakan penuh suka cita disebut?',
+    opts: ['Ngaben', 'Melasti', 'Nyepi', 'Galungan'],
+    ans: 0,
+  },
+  {
+    q: 'Sawah terasering ikonik di Gianyar yang menjadi simbol pertanian Bali adalah?',
+    opts: ['Sawah Jatiluwih', 'Sawah Tegalalang', 'Sawah Munduk', 'Sawah Kintamani'],
+    ans: 1,
+  },
+  {
+    q: 'Kabupaten di Bali yang TIDAK memiliki garis pantai adalah?',
+    opts: ['Tabanan', 'Karangasem', 'Bangli', 'Jembrana'],
+    ans: 2,
+  },
+  {
+    q: 'Hari Raya Nyepi di Bali memperingati pergantian tahun dalam kalender?',
+    opts: ['Kalender Masehi', 'Kalender Hijriyah', 'Kalender Saka Bali', 'Kalender Jawa'],
+    ans: 2,
+  },
+  {
+    q: 'Kesenian gamelan bambu khas Kabupaten Jembrana disebut?',
+    opts: ['Jegog', 'Gender Wayang', 'Angklung Bali', 'Gong Kebyar'],
+    ans: 0,
+  },
+];
+
+let currentQ = 0;
+let score    = 0;
+let answered = false;
+
+function initQuiz() {
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q       = quizData[currentQ];
+  const total   = quizData.length;
+  const pct     = ((currentQ) / total) * 100;
+
+  document.getElementById('qNum').textContent      = currentQ + 1;
+  document.getElementById('qTotal').textContent    = total;
+  document.getElementById('qScore').textContent    = score;
+  document.getElementById('qProgress').style.width = pct + '%';
+  document.getElementById('quizQuestion').textContent = q.q;
+
+  const optContainer = document.getElementById('quizOptions');
+  optContainer.innerHTML = '';
+  answered = false;
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => selectAnswer(i));
+    optContainer.appendChild(btn);
+  });
+}
+
+function selectAnswer(index) {
+  if (answered) return;
+  answered = true;
+
+  const q    = quizData[currentQ];
+  const opts = document.querySelectorAll('.quiz-opt');
+
+  opts.forEach(o => o.disabled = true);
+  opts[q.ans].classList.add('correct');
+
+  if (index === q.ans) {
+    score++;
+    document.getElementById('qScore').textContent = score;
+  } else {
+    opts[index].classList.add('wrong');
+  }
+
+  // Advance after delay
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < quizData.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 1200);
+}
+
+function showResult() {
+  document.getElementById('quizCard').classList.add('hidden');
+  const result = document.getElementById('quizResult');
+  result.classList.remove('hidden');
+
+  const total = quizData.length;
+  const pct   = Math.round((score / total) * 100);
+
+  document.getElementById('qProgress').style.width = '100%';
+
+  let emoji, title, desc;
+  if (pct >= 90) {
+    emoji = '🏆'; title = 'Luar Biasa!'; desc = 'Kamu adalah ahli Bali sejati! Pengetahuanmu tentang Pulau Dewata sangat mengesankan.';
+  } else if (pct >= 70) {
+    emoji = '⭐'; title = 'Bagus Sekali!'; desc = 'Pengetahuanmu tentang Bali sudah sangat baik. Sedikit lagi menjadi pakar!';
+  } else if (pct >= 50) {
+    emoji = '👍'; title = 'Cukup Baik!'; desc = 'Kamu sudah tahu banyak tentang Bali. Pelajari lagi untuk nilai sempurna!';
+  } else {
+    emoji = '📚'; title = 'Terus Belajar!'; desc = 'Masih banyak hal menarik tentang Bali yang bisa kamu pelajari. Coba lagi!';
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultDesc').textContent  = desc;
+  document.getElementById('resultScore').textContent = `${score} / ${total} (${pct}%)`;
+}
+
+function restartQuiz() {
+  currentQ = 0;
+  score    = 0;
+  document.getElementById('quizCard').classList.remove('hidden');
+  document.getElementById('quizResult').classList.add('hidden');
+  renderQuestion();
+}
+
+// Expose globally for onclick
+window.restartQuiz = restartQuiz;
+
+/* =========================================
+   KAMUS BAHASA BALI
+   ========================================= */
+const kamusData = [
+  { bali: 'Om Swastiastu',   indo: 'Salam pembuka / Semoga dalam keadaan baik',       contoh: 'Diucapkan saat bertemu orang Bali' },
+  { bali: 'Suksma',          indo: 'Terima kasih',                                    contoh: '"Suksma pisan" = Terima kasih banyak' },
+  { bali: 'Rahajeng',        indo: 'Selamat / Baik-baik',                             contoh: '"Rahajeng semeng" = Selamat pagi' },
+  { bali: 'Kija',            indo: 'Ke mana / Di mana',                               contoh: '"Kija lunga?" = Mau ke mana?' },
+  { bali: 'Lunga',           indo: 'Pergi / Berangkat',                               contoh: '"Tiang lunga ke peken" = Saya pergi ke pasar' },
+  { bali: 'Peken',           indo: 'Pasar',                                           contoh: 'Tempat jual beli tradisional' },
+  { bali: 'Gumi',            indo: 'Bumi / Tanah / Dunia',                            contoh: '"Gumi Bali" = Tanah Bali' },
+  { bali: 'Dewa',            indo: 'Dewa / Tuhan',                                    contoh: 'Dewa Siwa, Dewa Brahma, Dewa Wisnu' },
+  { bali: 'Pura',            indo: 'Tempat ibadah Hindu Bali',                        contoh: 'Pura Besakih, Pura Uluwatu' },
+  { bali: 'Tri Hita Karana', indo: 'Tiga penyebab kebahagiaan',                       contoh: 'Palemahan, Pawongan, Parahyangan' },
+  { bali: 'Ngaturang',       indo: 'Mempersembahkan / Memberikan',                    contoh: '"Ngaturang canang" = Mempersembahkan canang' },
+  { bali: 'Banjar',          indo: 'Komunitas adat setingkat RT/RW',                  contoh: 'Unit sosial terkecil di Bali' },
+  { bali: 'Kaja',            indo: 'Arah gunung / Utara (sakral)',                    contoh: 'Lawan kata "kelod" (laut)' },
+  { bali: 'Kelod',           indo: 'Arah laut / Selatan',                             contoh: 'Arah yang kurang sakral' },
+  { bali: 'Canang',          indo: 'Sesajen / Persembahan harian',                    contoh: 'Terbuat dari anyaman daun kelapa & bunga' },
+  { bali: 'Melukat',         indo: 'Ritual penyucian diri dengan air suci',           contoh: 'Dilakukan di Pura Tirta Empul' },
+  { bali: 'Nyepi',           indo: 'Hari Raya Tahun Baru Saka (Hari Kesunyian)',      contoh: 'Bali tutup total 24 jam' },
+  { bali: 'Galungan',        indo: 'Hari Raya kemenangan dharma atas adharma',        contoh: 'Ditandai dengan penjor bambu' },
+  { bali: 'Penjor',          indo: 'Bambu melengkung dihias sebagai persembahan',     contoh: 'Dipasang di depan rumah saat Galungan' },
+  { bali: 'Ogoh-ogoh',       indo: 'Patung raksasa dari bambu simbol roh jahat',      contoh: 'Diarak dan dibakar malam sebelum Nyepi' },
+];
+
+function initKamus() {
+  renderKamus(kamusData);
+
+  document.getElementById('kamusSearch').addEventListener('input', (e) => {
+    const keyword = e.target.value.toLowerCase();
+    const filtered = kamusData.filter(k =>
+      k.bali.toLowerCase().includes(keyword) ||
+      k.indo.toLowerCase().includes(keyword)
+    );
+    renderKamus(filtered);
+  });
+}
+
+function renderKamus(data) {
+  const grid = document.getElementById('kamusGrid');
+  if (!data.length) {
+    grid.innerHTML = '<p style="color:rgba(247,243,236,0.4); font-size:0.9rem;">Kata tidak ditemukan.</p>';
+    return;
+  }
+  grid.innerHTML = data.map(k => `
+    <div class="kamus-card">
+      <div class="kamus-bali">${k.bali}</div>
+      <div class="kamus-indo">${k.indo}</div>
+      ${k.contoh ? `<div class="kamus-contoh">💡 ${k.contoh}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+/* =========================================
+   KALENDER UPACARA ADAT
+   ========================================= */
+const kalenderData = [
+  { bulan: 'Jan', nama: 'Hari Raya Nyepi', desc: 'Tahun Baru Saka — hari kesunyian total selama 24 jam. Seluruh Bali berhenti: tidak ada aktivitas, lampu, suara, hingga penerbangan.', sila: '🇮🇩 Sila ke-1: Ketuhanan' },
+  { bulan: 'Feb', nama: 'Saraswati', desc: 'Hari raya ilmu pengetahuan — memuja Dewi Saraswati pelindung ilmu. Lontar dan buku-buku disakralkan, pelajar tidak boleh membaca hari itu.', sila: '🇮🇩 Sila ke-2: Kemanusiaan' },
+  { bulan: 'Mar', nama: 'Pagerwesi', desc: 'Empat hari setelah Saraswati — hari membentengi diri dari hal-hal buruk dan menguatkan iman kepada Tuhan.', sila: '🇮🇩 Sila ke-1: Ketuhanan' },
+  { bulan: 'Apr', nama: 'Melasti', desc: 'Ritual penyucian arca dan pratima pura ke laut atau sumber air suci. Ribuan umat berpakaian putih berjalan bersama ke pantai dalam prosesi sakral.', sila: '🇮🇩 Sila ke-3: Persatuan' },
+  { bulan: 'Mei', nama: 'Tumpek Uduh', desc: 'Upacara menghormati tumbuh-tumbuhan dan pepohonan. Mencerminkan keselarasan manusia Bali dengan alam sebagai bagian dari Tri Hita Karana.', sila: '🇮🇩 Sila ke-5: Keadilan Sosial' },
+  { bulan: 'Jun', nama: 'Galungan', desc: 'Hari raya kemenangan kebaikan (dharma) atas kejahatan (adharma). Seluruh Bali dipenuhi penjor bambu melengkung dan suasana perayaan meriah.', sila: '🇮🇩 Sila ke-1: Ketuhanan' },
+  { bulan: 'Jul', nama: 'Kuningan', desc: 'Sepuluh hari setelah Galungan — hari terakhir para leluhur berkunjung ke bumi. Ditandai dengan sesajen kuning dan upacara pelepasan.', sila: '🇮🇩 Sila ke-2: Kemanusiaan' },
+  { bulan: 'Agt', nama: 'Tumpek Landep', desc: 'Upacara memuja Dewa Pasupati untuk perlengkapan berbahan besi dan logam, termasuk kini juga kendaraan dan komputer.', sila: '🇮🇩 Sila ke-4: Kerakyatan' },
+  { bulan: 'Sep', nama: 'Piodalan Pura', desc: 'Hari ulang tahun (odalan) setiap pura yang dirayakan setiap 210 hari (6 bulan Bali). Setiap desa memiliki jadwal piodalan yang berbeda.', sila: '🇮🇩 Sila ke-3: Persatuan' },
+  { bulan: 'Okt', nama: 'Tumpek Wayang', desc: 'Hari suci wayang — menghormati seni pewayangan sebagai medium spiritual yang mengandung ajaran moral dan filsafat Hindu Bali.', sila: '🇮🇩 Sila ke-1: Ketuhanan' },
+  { bulan: 'Nov', nama: 'Hari Raya Siwaratri', desc: 'Malam perenungan dan pemujaan Dewa Siwa — umat berjaga semalam suntuk, berpuasa, dan melakukan meditasi sebagai penyucian dosa.', sila: '🇮🇩 Sila ke-1: Ketuhanan' },
+  { bulan: 'Des', nama: 'Ngaben Massal', desc: 'Kremasi massal yang dilakukan bersama-sama oleh satu desa atau banjar untuk meringankan biaya. Contoh nyata gotong royong budaya Bali.', sila: '🇮🇩 Sila ke-3: Persatuan' },
+];
+
+function initKalender() {
+  const grid = document.getElementById('kalenderGrid');
+  grid.innerHTML = kalenderData.map(k => `
+    <div class="kalender-card">
+      <div class="kalender-bulan">${k.bulan}</div>
+      <div>
+        <div class="kalender-nama">${k.nama}</div>
+        <div class="kalender-desc">${k.desc}</div>
+        <div class="kalender-sila">${k.sila}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* =========================================
+   INIT ALL NEW FEATURES
+   ========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  initPeta();
+  initEduTabs();
+  initQuiz();
+  initKamus();
+  initKalender();
+});
